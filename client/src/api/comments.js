@@ -1,3 +1,24 @@
+
+/**
+ * Like or dislike a comment
+ * @param {string} commentId
+ * @param {'like'|'dislike'|null} action - 'like', 'dislike', or null to remove
+ * @param {string} token - JWT for authentication
+ * @returns {Promise<object>} API response with new counts
+ */
+export async function likeComment(commentId, action, token) {
+  // Always send an explicit action key, even if null
+  const payload = { action: action === undefined ? null : action };
+  const res = await fetch(`${API_BASE}/comments/${commentId}/like`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
 const API_BASE = '/api';
 
 export async function getComments(subjectId) {

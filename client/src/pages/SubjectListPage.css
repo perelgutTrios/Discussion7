@@ -1,0 +1,22 @@
+/* Custom styles for like/dislike buttons in SubjectListPage */
+
+.btn-sm.border-success.bg-success.text-white {
+  background-color: #198754 !important;
+  color: #fff !important;
+  border-color: #198754 !important;
+}
+.btn-sm.border-success.bg-white.text-success {
+  background-color: #fff !important;
+  color: #198754 !important;
+  border-color: #198754 !important;
+}
+.btn-sm.border-danger.bg-danger.text-white {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+  border-color: #dc3545 !important;
+}
+.btn-sm.border-danger.bg-white.text-danger {
+  background-color: #fff !important;
+  color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}

@@ -53,4 +53,37 @@ router.get('/subject/:subjectId', async (req, res) => {
   }
 });
 
+
+/**
+ * Like or dislike a comment
+ * POST /api/comments/:id/like { action: 'like' | 'dislike' }
+ * Requires authentication
+ */
+router.post('/:id/like', auth, async (req, res) => {
+  const { action } = req.body; // 'like', 'dislike', null, or 'null'
+  const userId = req.user.userId;
+  console.log('Like/dislike action received:', action, typeof action);
+  // Accept 'like', 'dislike', null, or 'null' (string)
+  if (action !== 'like' && action !== 'dislike' && action !== null && action !== 'null') {
+    return res.status(400).json({ message: 'Invalid action' });
+  }
+  try {
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) return res.status(404).json({ message: 'Comment not found' });
+    // Remove user from both arrays first
+    comment.likes = comment.likes.filter(id => id.toString() !== userId);
+    comment.dislikes = comment.dislikes.filter(id => id.toString() !== userId);
+    if (action === 'like') {
+      comment.likes.push(userId);
+    } else if (action === 'dislike') {
+      comment.dislikes.push(userId);
+    }
+    // If action is null or 'null', just remove from both (already done above)
+    await comment.save();
+    res.json({ likes: comment.likes, dislikes: comment.dislikes });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

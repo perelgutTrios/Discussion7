@@ -77,4 +77,37 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+/**
+ * Like or dislike a subject
+ * POST /api/subjects/:id/like { action: 'like' | 'dislike' }
+ * Requires authentication
+ */
+router.post('/:id/like', auth, async (req, res) => {
+  const { action } = req.body; // 'like', 'dislike', null, or 'null'
+  const userId = req.user.userId;
+  console.log('Like/dislike action received:', action, typeof action);
+  // Accept 'like', 'dislike', null, or 'null' (string)
+  if (action !== 'like' && action !== 'dislike' && action !== null && action !== 'null') {
+    return res.status(400).json({ message: 'Invalid action' });
+  }
+  try {
+    const subject = await Subject.findById(req.params.id);
+    if (!subject) return res.status(404).json({ message: 'Subject not found' });
+    // Remove user from both arrays first
+    subject.likes = subject.likes.filter(id => id.toString() !== userId);
+    subject.dislikes = subject.dislikes.filter(id => id.toString() !== userId);
+    if (action === 'like') {
+      subject.likes.push(userId);
+    } else if (action === 'dislike') {
+      subject.dislikes.push(userId);
+    }
+    // If action is null or 'null', just remove from both (already done above)
+    await subject.save();
+    res.json({ likes: subject.likes, dislikes: subject.dislikes });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

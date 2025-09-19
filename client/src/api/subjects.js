@@ -1,3 +1,23 @@
+/**
+ * Like or dislike a subject
+ * @param {string} subjectId
+ * @param {'like'|'dislike'|null} action - 'like', 'dislike', or null to remove
+ * @param {string} token - JWT for authentication
+ * @returns {Promise<object>} API response with new counts
+ */
+export async function likeSubject(subjectId, action, token) {
+  // Always send an explicit action key, even if null
+  const payload = { action: action === undefined ? null : action };
+  const res = await fetch(`${API_BASE}/subjects/${subjectId}/like`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
 
 // API functions for subject CRUD operations
 const API_BASE = '/api';

@@ -95,12 +95,50 @@ npm start
 
 ---
 
-## Features
-- User registration and login with validation
-- Secure password hashing and JWT authentication
-- Create, view, and comment on discussion subjects
-- Responsive UI with Bootstrap
-- Full code documentation and chat log included
+
+## Like/Dislike Feature (feature/like-dislike branch)
+
+### Overview
+This branch adds a like/dislike feature for both subjects and comments. Users can upvote (like) or downvote (dislike) any subject or comment. Each item displays a count and colored Bootstrap arrow buttons, with toggling logic to ensure only one can be active at a time per user.
+
+### Data Schema Changes
+- **Subject model (`server/models/Subject.js`):**
+  - Added `likes` and `dislikes` fields (arrays of user ObjectIds).
+- **Comment model (`server/models/Comment.js`):**
+  - Added `likes` and `dislikes` fields (arrays of user ObjectIds).
+
+### Database Migration
+- A script (`server/initLikesDislikes.js`) was created and run to initialize all existing subjects and comments with empty `likes` and `dislikes` arrays, ensuring a count of 0 for all items in old databases.
+
+### Backend API Changes
+- **Endpoints added:**
+  - `POST /api/subjects/:id/like` — Like/dislike a subject. Expects `{ action: 'like' | 'dislike' | null }` in the body.
+  - `POST /api/comments/:id/like` — Like/dislike a comment. Expects `{ action: 'like' | 'dislike' | null }` in the body.
+- **Files changed:**
+  - `server/routes/subjects.js` (new endpoint, logic for toggling likes/dislikes)
+  - `server/routes/comments.js` (new endpoint, logic for toggling likes/dislikes)
+
+### Frontend UI Changes
+- **Subject list and detail pages:**
+  - Added up/down arrow buttons (Bootstrap Icons) for like/dislike, with outlined/solid states and color coding.
+  - Count is displayed between the buttons.
+  - Buttons toggle state and update count immediately on click.
+- **Comment list in subject detail:**
+  - Each comment now has like/dislike buttons and a count, with the same toggling logic as subjects.
+- **Files changed:**
+  - `client/src/pages/SubjectListPage.js` (UI, logic for subject like/dislike)
+  - `client/src/pages/SubjectListPage.css` (custom button styles)
+  - `client/src/pages/SubjectDetailPage.js` (UI, logic for subject and comment like/dislike)
+  - `client/src/api/subjects.js` (API utility for like/dislike)
+  - `client/src/api/comments.js` (API utility for like/dislike)
+
+### Usage
+- Users must be logged in to like or dislike.
+- Clicking an outlined up arrow turns it solid green and increments the count; clicking again removes the like.
+- Clicking an outlined down arrow turns it solid red and decrements the count; clicking again removes the dislike.
+- Switching from like to dislike (or vice versa) updates the state and count accordingly.
+
+---
 
 ---
 
